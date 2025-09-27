@@ -70,11 +70,9 @@ async def login_user(
     Raises:
         HTTPException: If the email or password is invalid (401 Unauthorized).
     """
-    # try to get the user by email
     user = await user_service.get_user_by_email(login_data.email, session)
 
     if user is not None:
-        # if user, verify password
         password_valid = verify_password(login_data.password, user.password_hash)
 
         if password_valid:
