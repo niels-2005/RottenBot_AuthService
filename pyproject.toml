@@ -3,15 +3,10 @@ name = "rotten-bot-signup"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-authors = [
-    { name = "Niels", email = "niels.scholz01@web.de" }
-]
 requires-python = ">=3.11"
-dependencies = []
-
-[project.scripts]
-rotten-bot-signup = "rotten_bot_signup:main"
-
-[build-system]
-requires = ["uv_build>=0.8.4,<0.9.0"]
-build-backend = "uv_build"
+dependencies = [
+    "asyncpg>=0.30.0",
+    "fastapi[standard]>=0.117.1",
+    "pydantic-settings>=2.11.0",
+    "sqlmodel>=0.0.25",
+]
