@@ -1,0 +1,5 @@
+Start the development server with: 
+
+be in root. 
+
+uvicorn src.main:app --reload
