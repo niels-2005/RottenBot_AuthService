@@ -92,3 +92,27 @@ class UserLoginResponseModel(BaseModel):
     access_token: str
     refresh_token: str
     user: UserModel
+
+
+class RefreshTokenResponseModel(BaseModel):
+    """Represents the response for token refresh.
+
+    This model is used as the response for the token refresh endpoint, providing a new access token.
+
+    Attributes:
+        access_token: New JWT access token.
+    """
+
+    access_token: str
+
+
+class LogoutResponseModel(BaseModel):
+    """Represents the response for user logout.
+
+    This model is used as the response for the logout endpoint, confirming successful logout.
+
+    Attributes:
+        message: Success message for logout.
+    """
+
+    message: str

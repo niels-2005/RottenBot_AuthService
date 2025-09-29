@@ -1,5 +1,15 @@
 from fastapi import FastAPI
 from .auth.routes import auth_router
+from contextlib import asynccontextmanager
+from src.db.main import init_db
+
+
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     # Startup code here
+#     await init_db()
+#     yield
+#     # Shutdown code here
 
 
 version = "v1"
@@ -20,6 +30,7 @@ app = FastAPI(
     openapi_url=f"{version_prefix}/openapi.json",
     docs_url=f"{version_prefix}/docs",
     redoc_url=f"{version_prefix}/redoc",
+    # lifespan=lifespan,
 )
 
 

@@ -7,9 +7,13 @@ from .schemas import (
     UserLoginModel,
     UserCreateResponseModel,
     UserLoginResponseModel,
+    RefreshTokenResponseModel,
+    LogoutResponseModel,
 )
 from .utils import verify_password, create_access_token
-from datetime import timedelta
+from datetime import timedelta, datetime
+from .dependencies import RefreshTokenBearer, AccessTokenBearer
+from src.db.redis import add_jti_to_blocklist
 
 auth_router = APIRouter()
 user_service = UserService()
@@ -103,4 +107,50 @@ async def login_user(
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid email or password",
+    )
+
+
+@auth_router.get(
+    "/logout", response_model=LogoutResponseModel, status_code=status.HTTP_200_OK
+)
+async def revoke_token(token_details: dict = Depends(AccessTokenBearer())):
+    """Revokes the access token by adding its JTI to the blocklist.
+
+    Args:
+        token_details: The token details obtained from the access token bearer.
+
+    Returns:
+        A response model containing a success message for logout.
+    """
+    await add_jti_to_blocklist(token_details["jti"])
+    return LogoutResponseModel(message="Logged Out Successfully")
+
+
+@auth_router.get(
+    "/refresh_token",
+    response_model=RefreshTokenResponseModel,
+    status_code=status.HTTP_200_OK,
+)
+async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer())):
+    """Generates a new access token using a valid refresh token.
+
+    Args:
+        token_details: The token details obtained from the refresh token bearer.
+
+    Returns:
+        A response model containing the new access token.
+
+    Raises:
+        HTTPException: If the refresh token is invalid or expired (400 Bad Request).
+    """
+    expiry_timestamp = token_details["exp"]
+
+    if datetime.fromtimestamp(expiry_timestamp) > datetime.now():
+        new_access_token = create_access_token(user_data=token_details["user"])
+
+        return RefreshTokenResponseModel(access_token=new_access_token)
+
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="Invalid Or expired token. Please login again",
     )
