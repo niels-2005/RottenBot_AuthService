@@ -4,6 +4,9 @@ from datetime import datetime, timedelta
 import jwt
 from passlib.context import CryptContext
 from src.config import Config
+import logging
+
+logger = logging.getLogger(__name__)
 
 passwd_context = CryptContext(schemes=["bcrypt"])
 
@@ -17,8 +20,12 @@ def generate_password_hash(password: str) -> str:
     Returns:
         The hashed password as a string.
     """
-    hash = passwd_context.hash(password)
-    return hash
+    try:
+        hash = passwd_context.hash(password)
+        return hash
+    except Exception as e:
+        logger.error(f"Error hashing password: {e}", exc_info=True)
+        return None
 
 
 def verify_password(password: str, hash: str) -> bool:
@@ -47,18 +54,22 @@ def create_access_token(
     Returns:
         The encoded JWT token as a string.
     """
-    payload = {
-        "user": user_data,
-        "exp": datetime.now()
-        + (expiry if expiry is not None else timedelta(minutes=60)),
-        "jti": str(uuid.uuid4()),
-        "refresh": refresh,
-    }
+    try:
+        payload = {
+            "user": user_data,
+            "exp": datetime.now()
+            + (expiry if expiry is not None else timedelta(minutes=60)),
+            "jti": str(uuid.uuid4()),
+            "refresh": refresh,
+        }
 
-    token = jwt.encode(
-        payload=payload, key=Config.JWT_SECRET, algorithm=Config.JWT_ALGORITHM
-    )
-    return token
+        token = jwt.encode(
+            payload=payload, key=Config.JWT_SECRET, algorithm=Config.JWT_ALGORITHM
+        )
+        return token
+    except Exception as e:
+        logger.error(f"Error creating access token: {e}", exc_info=True)
+        return None
 
 
 def decode_token(token: str) -> dict:
