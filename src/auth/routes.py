@@ -112,12 +112,6 @@ async def signup_user(
                 message="User created successfully",
                 user=new_user.model_dump(),
             )
-    except Exception as e:
-        logger.error(f"Error in signup_user: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Oops. Something went wrong. Please try again later.",
-        )
     finally:
         duration_ms = (time.time() - start_time) * 1000
         auth_api_duration.record(
@@ -160,6 +154,7 @@ async def login_user(
                     "service_name": "auth_service",
                 },
             )
+
             with tracer.start_as_current_span(
                 "get_user_by_email"
             ) as get_user_by_email_span:
@@ -198,8 +193,7 @@ async def login_user(
                             refresh=True,
                         )
 
-                    if access_token or refresh_token is None:
-                        # error already logged in create_access_token
+                    if access_token is None or refresh_token is None:
                         raise HTTPException(
                             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail="Oops. Something went wrong. Please try again later.",
@@ -218,13 +212,6 @@ async def login_user(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password",
             )
-
-    except Exception as e:
-        logger.error(f"Error in login_user: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Oops. Something went wrong. Please try again later.",
-        )
     finally:
         duration_ms = (time.time() - start_time) * 1000
         auth_api_duration.record(
@@ -277,13 +264,6 @@ async def revoke_token(token_details: dict = Depends(AccessTokenBearer())):
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail="Oops. Something went wrong. Please try again later.",
                 )
-
-    except Exception as e:
-        logger.error(f"Error in revoke_token (Logout Endpoint): {e}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Oops. Something went wrong. Please try again later.",
-        )
     finally:
         duration_ms = (time.time() - start_time) * 1000
         auth_api_duration.record(
@@ -341,14 +321,6 @@ async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid Or expired token. Please login again",
             )
-
-    except Exception as e:
-        logger.error(f"Error in get_new_access_token: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Oops. Something went wrong. Please try again later.",
-        )
-
     finally:
         duration_ms = (time.time() - start_time) * 1000
         auth_api_duration.record(

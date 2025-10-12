@@ -8,7 +8,12 @@ logger = logging.getLogger(__name__)
 JTI_EXPIRY = 3600
 
 # Async Redis Client
-token_blocklist = Redis(host=Config.REDIS_HOST, port=Config.REDIS_PORT, db=0)
+token_blocklist = Redis(
+    host=Config.REDIS_HOST,
+    port=Config.REDIS_PORT,
+    password=Config.REDIS_PASSWORD,
+    db=0,
+)
 
 
 async def add_jti_to_blocklist(jti: str) -> None:
