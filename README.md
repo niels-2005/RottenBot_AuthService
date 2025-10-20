@@ -311,7 +311,29 @@ This authentication service provides secure access control for:
 
 All services validate JWT tokens issued by this auth service, ensuring consistent authentication across the entire RottenBot ecosystem.
 
-## 📝 License
+## 🤖 CI/CD Pipeline
+
+### Current Implementation
+
+This project includes a **simple CI pipeline** that automatically builds and deploys the Docker image to Docker Hub.
+
+**Pipeline Trigger:**
+- Runs on every commit to the `main` branch
+- Automatically builds the Docker image using the Dockerfile
+- Pushes the image to Docker Hub as `nielsscholz/rotten_bot_auth:latest`
+
+### ⚠️ Important Notes
+
+**This is NOT a production-ready pipeline!** The current setup was implemented for simplicity and demonstration purposes.
+
+**Current Limitations:**
+- No branch strategy (dev, staging, prod)
+- Commits directly to `main` trigger deployment
+- No automated testing before deployment
+- No security scanning
+- No secret detection
+
+## License
 
 This project is part of the RottenBot ecosystem. See the main RottenBot repository for licensing information.
 
