@@ -14,6 +14,14 @@ import logging
 
 
 def setup_observability(service_name: str = "my-app"):
+    """Sets up observability with tracing, metrics, and logging for the application.
+
+    Args:
+        service_name (str, optional): The name of the service. Defaults to "my-app".
+
+    Returns:
+        Tuple[trace.Tracer, metrics.Meter]: The tracer and meter instances.
+    """
     resource = Resource.create({"service.name": service_name})
 
     # Tracing Setup
@@ -46,10 +54,25 @@ def setup_observability(service_name: str = "my-app"):
     return trace.get_tracer(__name__), metrics.get_meter(__name__)
 
 
-# Helper-Funktion für andere Module
 def get_tracer(module_name: str):
+    """Retrieves a tracer for the specified module.
+
+    Args:
+        module_name (str): The name of the module.
+
+    Returns:
+        trace.Tracer: The tracer instance for the module.
+    """
     return trace.get_tracer(module_name)
 
 
 def get_meter(module_name: str):
+    """Retrieves a meter for the specified module.
+
+    Args:
+        module_name (str): The name of the module.
+
+    Returns:
+        metrics.Meter: The meter instance for the module.
+    """
     return metrics.get_meter(module_name)

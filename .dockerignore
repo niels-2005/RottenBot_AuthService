@@ -1,0 +1,55 @@
+# Python-Cache und temporäre Dateien
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Git und Versionskontrolle
+.git/
+.gitignore
+
+# Docker-spezifisch
+Dockerfile
+.dockerignore
+docker-compose.yaml 
+
+# Dokumentation und nicht-essenzielle Dateien
+README.md
+docs/
+*.md
+
+# Logs und Debug-Dateien
+*.log
+logs/
+
+# Tests (falls nicht im Image benötigt)
+tests/
+
+# Umgebungsdateien (sensibel)
+.env
+.env.local
+
+# IDE-spezifisch
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# MLflow oder Modell-Dateien (falls groß und nicht benötigt)
+mlruns/
+models/  # Passe an, falls Modelle separat geladen werden
+
+# Temporäre Dateien
+tmp/
+temp/ 
+
+model 
+.python-version 
+Dockerfile.mlflow 
+info.txt 
+test_api.py 
+test.ipynb

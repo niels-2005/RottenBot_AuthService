@@ -4,11 +4,60 @@ from datetime import datetime, timedelta
 import jwt
 from passlib.context import CryptContext
 from src.config import Config
+from src.auth.setup_observability import get_meter
 import logging
 
+meter = get_meter(__name__)
 logger = logging.getLogger(__name__)
 
 passwd_context = CryptContext(schemes=["bcrypt"])
+
+# a meter to track auth API requests
+auth_api_counter = meter.create_counter(
+    name="auth_api_requests_total",
+    description="Total number of auth API requests",
+    unit="1",
+)
+
+# a histogram to track auth API request durations
+auth_api_duration = meter.create_histogram(
+    name="auth_api_duration_milliseconds",
+    description="Auth API request duration",
+    unit="ms",
+)
+
+
+def increase_auth_api_counter(endpoint_config: dict[str, str]) -> None:
+    """Increases the auth API counter for a specific endpoint.
+
+    Args:
+        endpoint_config (dict[str, str]): Configuration for the endpoint.
+    """
+    try:
+        auth_api_counter.add(1, **endpoint_config)
+    except Exception as e:
+        logger.error(
+            f"Error increasing auth API counter for endpoint {endpoint_config['endpoint']}: {e}",
+            exc_info=True,
+        )
+
+
+def record_auth_api_duration(
+    duration_ms: float, endpoint_config: dict[str, str]
+) -> None:
+    """Records the duration of an auth API request for a specific endpoint.
+
+    Args:
+        duration_ms (float): The duration of the API request in milliseconds.
+        endpoint_config (dict[str, str]): Configuration for the endpoint.
+    """
+    try:
+        auth_api_duration.record(duration_ms, **endpoint_config)
+    except Exception as e:
+        logger.error(
+            f"Error recording auth API duration for endpoint {endpoint_config['endpoint']}: {e}",
+            exc_info=True,
+        )
 
 
 def generate_password_hash(password: str) -> str:
@@ -25,7 +74,6 @@ def generate_password_hash(password: str) -> str:
         return hash
     except Exception as e:
         logger.error(f"Error hashing password: {e}", exc_info=True)
-        return None
 
 
 def verify_password(password: str, hash: str) -> bool:
@@ -38,7 +86,10 @@ def verify_password(password: str, hash: str) -> bool:
     Returns:
         True if the password matches the hash, False otherwise.
     """
-    return passwd_context.verify(password, hash)
+    try:
+        return passwd_context.verify(password, hash)
+    except Exception as e:
+        logger.error(f"Error verifying password: {e}", exc_info=True)
 
 
 def create_access_token(
@@ -81,7 +132,9 @@ def decode_token(token: str) -> dict:
     Returns:
         A dictionary containing the decoded token payload.
     """
-    token_data = jwt.decode(
-        jwt=token, algorithms=[Config.JWT_ALGORITHM], key=Config.JWT_SECRET
-    )
-    return token_data
+    try:
+        return jwt.decode(
+            jwt=token, algorithms=[Config.JWT_ALGORITHM], key=Config.JWT_SECRET
+        )
+    except Exception as e:
+        logger.error(f"Error decoding token: {e}", exc_info=True)
