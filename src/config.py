@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     REDIS_PORT: int
     REDIS_PASSWORD: str
 
+    ALLOY_ENDPOINT: str
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 

@@ -11,6 +11,7 @@ from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 import logging
+from src.config import Config
 
 
 def setup_observability(service_name: str = "my-app"):
@@ -26,13 +27,13 @@ def setup_observability(service_name: str = "my-app"):
 
     # Tracing Setup
     trace_provider = TracerProvider(resource=resource)
-    trace_exporter = OTLPSpanExporter(endpoint="http://localhost:4317", insecure=True)
+    trace_exporter = OTLPSpanExporter(endpoint=Config.ALLOY_ENDPOINT, insecure=True)
     trace_provider.add_span_processor(BatchSpanProcessor(trace_exporter))
     trace.set_tracer_provider(trace_provider)
 
     # Logging Setup
     logger_provider = LoggerProvider(resource=resource)
-    log_exporter = OTLPLogExporter(endpoint="http://localhost:4317", insecure=True)
+    log_exporter = OTLPLogExporter(endpoint=Config.ALLOY_ENDPOINT, insecure=True)
     logger_provider.add_log_record_processor(BatchLogRecordProcessor(log_exporter))
     set_logger_provider(logger_provider)
 
@@ -42,9 +43,7 @@ def setup_observability(service_name: str = "my-app"):
     logging.getLogger().setLevel(logging.INFO)
 
     # Metrics Setup
-    metric_exporter = OTLPMetricExporter(
-        endpoint="http://localhost:4317", insecure=True
-    )
+    metric_exporter = OTLPMetricExporter(endpoint=Config.ALLOY_ENDPOINT, insecure=True)
     metric_reader = PeriodicExportingMetricReader(
         metric_exporter, export_interval_millis=15000
     )
