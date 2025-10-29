@@ -301,6 +301,7 @@ environment:
     REDIS_PORT: ${REDIS_PORT}
     JWT_SECRET: ${JWT_SECRET}
     JWT_ALGORITHM: ${JWT_ALGORITHM}
+    ALLOY_ENDPOINT: ${ALLOY_ENPOINT}
 ```
 
 ## 🤝 Integration with RottenBot Services

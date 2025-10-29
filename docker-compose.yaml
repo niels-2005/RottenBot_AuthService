@@ -35,6 +35,7 @@ services:
       REDIS_PORT: 6379
       JWT_SECRET: ${JWT_SECRET}
       JWT_ALGORITHM: ${JWT_ALGORITHM}
+      ALLOY_ENDPOINT: ${ALLOY_ENPOINT}
     depends_on:
       - postgres
       - redis
