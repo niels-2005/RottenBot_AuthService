@@ -287,21 +287,24 @@ Use observability data to:
 
 ### Running with Docker Compose 
 
-```bash
+```yaml
 auth_service:
-container_name: auth_service
-image: nielsscholz/rotten_bot_auth:latest
-ports:
-    - "8000:8000"
-environment:
-    # look in the .env.example file for all required environment variables.
-    DATABASE_URL: ${DATABASE_URL}
-    REDIS_PASSWORD: ${REDIS_PASSWORD}
-    REDIS_HOST: ${REDIS_HOST}
-    REDIS_PORT: ${REDIS_PORT}
-    JWT_SECRET: ${JWT_SECRET}
-    JWT_ALGORITHM: ${JWT_ALGORITHM}
-    ALLOY_ENDPOINT: ${ALLOY_ENPOINT}
+    container_name: auth_service
+    image: nielsscholz/rotten_bot_auth:latest
+    ports:
+        - "8000:8000"
+    environment:
+        # look in the .env.example file for all required environment variables and explainations.
+        DATABASE_URL: ${DATABASE_URL}
+
+        REDIS_PASSWORD: ${REDIS_PASSWORD}
+        REDIS_HOST: ${REDIS_HOST}
+        REDIS_PORT: ${REDIS_PORT}
+
+        JWT_SECRET: ${JWT_SECRET}
+        JWT_ALGORITHM: ${JWT_ALGORITHM}
+
+        ALLOY_ENDPOINT: ${ALLOY_ENPOINT}
 ```
 
 ## 🤝 Integration with RottenBot Services
